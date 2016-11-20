@@ -22,7 +22,7 @@ public class PersistentTransactionDAO implements TransactionDAO {
 
     @Override
     public void logTransaction(Date date, String accountNo, ExpenseType expenseType, double amount) {
-        String sql = "INSERT INTO TransactionLog (Account_no,Type,Amt,Log_date) VALUES (?,?,?,?)";
+        String sql = "INSERT INTO TransactionLog (Account_no,Type,Amount,Log_date) VALUES (?,?,?,?)";
         SQLiteStatement statement = expMgrDatabase.compileStatement(sql);
         statement.bindString(1,accountNo);
         statement.bindLong(2,(expenseType == ExpenseType.EXPENSE) ? 0 : 1);
@@ -34,30 +34,43 @@ public class PersistentTransactionDAO implements TransactionDAO {
     @Override
     public List<Transaction> getAllTransactionLogs() {
         Cursor resultSet = expMgrDatabase.rawQuery("SELECT * FROM TransactionLog",null);
-        resultSet.moveToFirst();
+        //resultSet.moveToFirst();
         List<Transaction> transactions = new ArrayList<Transaction>();
-        while(resultSet.moveToNext()){
-            Transaction transaction = new Transaction(new Date(resultSet.getLong(resultSet.getColumnIndex("Log_date"))),
-            resultSet.getString(resultSet.getColumnIndex("Account_no")),
-            (resultSet.getInt(resultSet.getColumnIndex("Type")) == 0) ? ExpenseType.EXPENSE : ExpenseType.INCOME,
-            resultSet.getDouble(resultSet.getColumnIndex("Amt")));
-            transactions.add(transaction);
-         }
-        return transactions;
+        if(resultSet.moveToFirst()) {
+            do{
+                Transaction transaction = new Transaction(new Date(resultSet.getLong
+                        (resultSet.getColumnIndex("Log_date"))),
+                        resultSet.getString(resultSet.getColumnIndex("Account_no")),
+                        (resultSet.getInt(resultSet.getColumnIndex("Type")) == 0) ?
+                                ExpenseType.EXPENSE : ExpenseType.INCOME,
+                        resultSet.getDouble(resultSet.getColumnIndex("Amount")));
+                transactions.add(transaction);
+            }
+            while (resultSet.moveToNext());
+        }
+            return transactions;
     }
 
     @Override
     public List<Transaction> getPaginatedTransactionLogs(int limit) {
         Cursor resultSet = expMgrDatabase.rawQuery("SELECT * FROM TransactionLog LIMIT " + limit,null);
-        resultSet.moveToFirst();
+        //resultSet.moveToFirst();
         List<Transaction> transactions = new ArrayList<Transaction>();
-        while(resultSet.moveToNext()){
-            Transaction transaction = new Transaction(new Date(resultSet.getLong(resultSet.getColumnIndex("Log_date"))),
-            resultSet.getString(resultSet.getColumnIndex("Account_no")),
-            (resultSet.getInt(resultSet.getColumnIndex("Type")) == 0) ? ExpenseType.EXPENSE : ExpenseType.INCOME,
-            resultSet.getDouble(resultSet.getColumnIndex("Amt")));
-            transactions.add(transaction);
+        if(resultSet.moveToFirst()) {
+            do {
+                Transaction transaction = new Transaction(new Date(resultSet.getLong
+                        (resultSet.getColumnIndex("Log_date"))),
+                        resultSet.getString(resultSet.getColumnIndex("Account_no")),
+                        (resultSet.getInt(resultSet.getColumnIndex("Type")) == 0) ?
+                                ExpenseType.EXPENSE : ExpenseType.INCOME,
+                        resultSet.getDouble(resultSet.getColumnIndex("Amount")));
+                transactions.add(transaction);
+
+
+            }
+            while (resultSet.moveToNext());
+
         }
-        return transactions;
+            return transactions;
     }
 }

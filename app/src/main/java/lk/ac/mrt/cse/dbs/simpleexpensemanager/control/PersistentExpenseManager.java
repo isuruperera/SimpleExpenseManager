@@ -22,25 +22,27 @@ public class PersistentExpenseManager extends ExpenseManager {
 
     @Override
     public void setup() {
-        SQLiteDatabase expmgrdatabase = context.openOrCreateDatabase("expenses", context.MODE_PRIVATE, null);
-
-        expmgrdatabase.execSQL("CREATE TABLE IF NOT EXISTS Account(" +
-                        "Account_no VARCHAR PRIMARY KEY," +
-                        "Initial_amt REAL" +
+        SQLiteDatabase expMgrDatabase = context.openOrCreateDatabase("140462E", context.MODE_PRIVATE, null);
+        //Creates tables if not existing
+        expMgrDatabase.execSQL("CREATE TABLE IF NOT EXISTS Account(" +
+                "Account_no VARCHAR PRIMARY KEY," +
+                "Bank VARCHAR(50)," +
+                "Holder VARCHAR(50),"+
+                "Initial_amount REAL" +
                 " );");
 
-        expmgrdatabase.execSQL("CREATE TABLE IF NOT EXISTS TransactionLog(" +
+        expMgrDatabase.execSQL("CREATE TABLE IF NOT EXISTS TransactionLog(" +
                 "Transaction_id INTEGER PRIMARY KEY," +
                 "Account_no VARCHAR," +
                 "Type INT," +
-                "Amt REAL," +
-                "Log_date DATE,"+
+                "Amount REAL," +
+                "Log_date DATE," +
                 "FOREIGN KEY (Account_no) REFERENCES Account(Account_no)" +
                 ");");
 
-        AccountDAO persistentaccountDAO = new PersistentAccountDAO(expmgrdatabase);
-        setAccountsDAO(persistentaccountDAO);
-        setTransactionsDAO(new PersistentTransactionDAO(expmgrdatabase));
+        PersistentAccountDAO persistentAccountDAO = new PersistentAccountDAO(expMgrDatabase);
+        setAccountsDAO(persistentAccountDAO);
+        setTransactionsDAO(new PersistentTransactionDAO(expMgrDatabase));
 
 
 
