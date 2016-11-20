@@ -65,8 +65,6 @@ public class PersistentTransactionDAO implements TransactionDAO {
                                 ExpenseType.EXPENSE : ExpenseType.INCOME,
                         resultSet.getDouble(resultSet.getColumnIndex("Amount")));
                 transactions.add(transaction);
-
-
             }
             while (resultSet.moveToNext());
 
